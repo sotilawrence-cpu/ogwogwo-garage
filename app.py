@@ -1,3 +1,8 @@
+# --- THE FIX: MUST BE AT THE VERY TOP ---
+import eventlet
+eventlet.monkey_patch()
+# ----------------------------------------
+
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_socketio import SocketIO, emit
@@ -10,11 +15,11 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'ogwogwo-default-key-202
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///garage.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# This looks for a password set in Render. If not found, it defaults to Ogwogwo2026
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'Ogwogwo2026')
 
 db = SQLAlchemy(app)
-socketio = SocketIO(app, cors_allowed_origins="*")
+# Use 'eventlet' as the async mode to match our Render settings
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
 
 class Booking(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -44,6 +49,8 @@ def booking():
         )
         db.session.add(new_booking)
         db.session.commit()
+        
+        # This will now work perfectly with the monkey patch
         socketio.emit('new_booking', {
             'customer': new_booking.customer_name,
             'plate': new_booking.plate_number,
