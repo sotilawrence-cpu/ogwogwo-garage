@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="p-5 mb-4 bg-dark rounded-3 border border-secondary text-center shadow-lg">
+    <div class="container-fluid py-5">
+        <h1 class="display-4 fw-bold text-light">Ogwogwo professional Garage & auto-Repair</h1>
+        <p class="fs-4 text-muted">Precision repairs and real-time service tracking for your vehicle.</p>
+        <hr class="my-4 border-secondary" style="width: 50%; margin: auto;">
+        <p class="lead">Operation Hours: <span class="text-info">Sunday — Friday</span> | 08:00 - 18:00</p>
+        <a href="/booking" class="btn btn-primary btn-lg px-5 mt-3">Book Your Service Now</a>
+    </div>
+</div>
+
+<div class="row g-4 py-5 row-cols-1 row-cols-lg-3 text-center">
+    <div class="feature col">
+        <div class="feature-icon d-inline-flex align-items-center justify-content-center fs-2 mb-3">
+            🛠️
+        </div>
+        <h3 class="fs-4">Engine Diagnostics</h3>
+        <p>Complete troubleshooting for mechanical and electrical issues.</p>
+    </div>
+    <div class="feature col">
+        <div class="feature-icon d-inline-flex align-items-center justify-content-center fs-2 mb-3">
+            🛢️
+        </div>
+        <h3 class="fs-4">Oil & Fluids</h3>
+        <p>Quick maintenance to keep your engine running smoothly.</p>
+    </div>
+    <div class="feature col">
+        <div class="feature-icon d-inline-flex align-items-center justify-content-center fs-2 mb-3">
+            🏁
+        </div>
+        <h3 class="fs-4">Brake Systems</h3>
+        <p>Full safety inspections and brake pad replacements.</p>
+    </div>
+</div>
+{% endblock %}
