@@ -1,36 +1,37 @@
 {% extends "base.html" %}
-{% block content %}
-<div class="p-5 mb-4 bg-dark rounded-3 border border-secondary text-center shadow-lg">
-    <div class="container-fluid py-5">
-        <h1 class="display-4 fw-bold text-light">Ogwogwo professional Garage & auto-Repair</h1>
-        <p class="fs-4 text-muted">Precision repairs and real-time service tracking for your vehicle.</p>
-        <hr class="my-4 border-secondary" style="width: 50%; margin: auto;">
-        <p class="lead">Operation Hours: <span class="text-info">Sunday — Friday</span> | 08:00 - 18:00</p>
-        <a href="/booking" class="btn btn-primary btn-lg px-5 mt-3">Book Your Service Now</a>
-    </div>
-</div>
 
-<div class="row g-4 py-5 row-cols-1 row-cols-lg-3 text-center">
-    <div class="feature col">
-        <div class="feature-icon d-inline-flex align-items-center justify-content-center fs-2 mb-3">
-            🛠️
+{% block content %}
+<div class="text-center py-5">
+    <h1 class="display-3 fw-bold text-warning">OGWOGWO BONOKO GARAGE</h1>
+    <p class="lead text-light mb-5">Bungoma’s Premier Destination for Mechanical Excellence & Precision Repair.</p>
+    
+    <div class="row g-4 mt-2">
+        <div class="col-md-4">
+            <div class="card h-100 p-3">
+                <i class="bi bi-gear-wide-connected fs-1 text-info mb-3"></i>
+                <h5>Expert Diagnostics</h5>
+                <p class="small text-muted">We use modern tools to find the root cause of your vehicle's issues fast.</p>
+            </div>
         </div>
-        <h3 class="fs-4">Engine Diagnostics</h3>
-        <p>Complete troubleshooting for mechanical and electrical issues.</p>
+        <div class="col-md-4">
+            <div class="card h-100 p-3">
+                <i class="bi bi-tools fs-1 text-info mb-3"></i>
+                <h5>Full Service</h5>
+                <p class="small text-muted">From oil changes to engine overhauls, the Silver Bull handles it all.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 p-3">
+                <i class="bi bi-shield-check fs-1 text-info mb-3"></i>
+                <h5>Reliability</h5>
+                <p class="small text-muted">Quality parts and transparent pricing. No hidden costs, ever.</p>
+            </div>
+        </div>
     </div>
-    <div class="feature col">
-        <div class="feature-icon d-inline-flex align-items-center justify-content-center fs-2 mb-3">
-            🛢️
-        </div>
-        <h3 class="fs-4">Oil & Fluids</h3>
-        <p>Quick maintenance to keep your engine running smoothly.</p>
-    </div>
-    <div class="feature col">
-        <div class="feature-icon d-inline-flex align-items-center justify-content-center fs-2 mb-3">
-            🏁
-        </div>
-        <h3 class="fs-4">Brake Systems</h3>
-        <p>Full safety inspections and brake pad replacements.</p>
+
+    <div class="mt-5">
+        <a href="/booking" class="btn btn-warning btn-lg px-5 py-3 fw-bold shadow">BOOK YOUR SERVICE NOW</a>
     </div>
 </div>
 {% endblock %}
+      
