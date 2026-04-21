@@ -3,73 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ogwogwo Bonoko Garage | Expert Mechanical Services</title>
+    <title>Ogwogwo Bonoko Garage | Kisii-Kenya</title>
     
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='ogwogwo_web_logo.png') }}">
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     
     <style>
-        :root {
-            --garage-dark: #0f0f0f;
-            --garage-card: #1e1e1e;
-            --garage-accent: #ffc107; /* Warning Gold */
-        }
-
-        body { 
-            background-color: var(--garage-dark); 
-            color: #f8f9fa; 
-            font-family: 'Inter', -apple-system, sans-serif;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        .navbar { 
-            background-color: rgba(0, 0, 0, 0.9) !important; 
-            border-bottom: 2px solid #333;
-            backdrop-filter: blur(10px);
-        }
-
-        .card { 
-            background-color: var(--garage-card); 
-            border: 1px solid #333; 
-            transition: transform 0.3s ease;
-        }
-        
-        .card:hover {
-            transform: translateY(-5px);
-            border-color: var(--garage-accent);
-        }
-
-        .btn-warning {
-            background-color: var(--garage-accent);
-            border: none;
-            color: #000;
-        }
-
-        .garage-logo { 
-            max-height: 50px; 
-            width: auto; 
-            border-radius: 4px;
-        }
-
-        footer { 
-            background-color: #000; 
-            color: #888;
-            margin-top: auto;
-        }
-
-        .social-link {
-            font-size: 1.5rem;
-            transition: color 0.3s ease;
-        }
-        
-        .social-link:hover {
-            color: var(--garage-accent) !important;
-        }
+        :root { --garage-dark: #0f0f0f; --garage-card: #1e1e1e; --garage-accent: #ffc107; }
+        body { background-color: var(--garage-dark); color: #f8f9fa; font-family: sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+        .navbar { background-color: rgba(0, 0, 0, 0.9) !important; border-bottom: 2px solid #333; }
+        .card { background-color: var(--garage-card); border: 1px solid #333; }
+        .garage-logo { max-height: 50px; border-radius: 4px; }
+        footer { background-color: #000; color: #888; margin-top: auto; }
+        .btn-warning { background-color: var(--garage-accent); color: #000; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -78,24 +25,12 @@
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="/">
                 <img src="{{ url_for('static', filename='ogwogwo_web_logo.png') }}" alt="Logo" class="garage-logo me-2">
-                <span class="fw-bold text-uppercase tracking-wider">Ogwogwo Bonoko</span>
+                <span class="fw-bold text-uppercase">Ogwogwo Bonoko</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto align-items-center">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/">Home</a>
-                    </li>
-                    <li class="nav-item ms-lg-3">
-                        <a class="nav-link text-info" href="/admin">
-                            <i class="bi bi-person-badge-fill me-1"></i>Admin
-                        </a>
-                    </li>
-                    <li class="nav-item ms-lg-3">
-                        <a class="btn btn-warning fw-bold px-4" href="/booking">BOOK SERVICE</a>
-                    </li>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                    <li class="nav-item ms-lg-3"><a class="btn btn-warning px-4" href="/booking">BOOK SERVICE</a></li>
                 </ul>
             </div>
         </div>
@@ -110,35 +45,24 @@
             <div class="row">
                 <div class="col-md-4 mb-4">
                     <h6 class="text-white text-uppercase fw-bold mb-3">Ogwogwo Bonoko Garage</h6>
-                    <p class="small">Dedicated to keeping your vehicle in peak condition with professional diagnostics and repairs.</p>
-                    <p class="text-white mb-0"><i class="bi bi-geo-alt-fill text-warning me-2"></i> Bungoma, Kenya</p>
+                    <p class="small">Top-tier mechanical services now serving the Kisii region.</p>
+                    <p class="text-white mb-0"><i class="bi bi-geo-alt-fill text-warning me-2"></i> Kisii, Kenya</p>
                 </div>
                 <div class="col-md-4 mb-4">
                     <h6 class="text-white text-uppercase fw-bold mb-3">Contact Details</h6>
-                    <p class="mb-1">
-                        <i class="bi bi-telephone-fill text-warning me-2"></i> 
-                        <a href="tel:+254712201770" class="text-white text-decoration-none">+254 712 201 770</a>
-                    </p>
+                    <p class="mb-1"><i class="bi bi-telephone-fill text-warning me-2"></i> +254 712 201 770</p>
                     <p class="small"><i class="bi bi-clock-fill text-warning me-2"></i> Sun - Fri: 08:00 - 18:00</p>
                 </div>
                 <div class="col-md-4 mb-4 text-md-end">
-                    <h6 class="text-white text-uppercase fw-bold mb-3">Follow Our Work</h6>
+                    <h6 class="text-white text-uppercase fw-bold mb-3">Follow Us</h6>
                     <div class="d-flex justify-content-md-end gap-3">
-                        <a href="#" class="text-light social-link"><i class="bi bi-facebook"></i></a>
-                        <a href="#" class="text-light social-link"><i class="bi bi-instagram"></i></a>
-                        <a href="#" class="text-light social-link"><i class="bi bi-twitter-x"></i></a>
+                        <i class="bi bi-facebook fs-4"></i>
+                        <i class="bi bi-instagram fs-4"></i>
                     </div>
                 </div>
             </div>
             <hr class="border-secondary my-4">
-            <div class="row align-items-center">
-                <div class="col-md-6 text-center text-md-start">
-                    <p class="small mb-0">&copy; 2026 Ogwogwo Bonoko Garage. Reliability you can trust.</p>
-                </div>
-                <div class="col-md-6 text-center text-md-end">
-                    <a href="/logout" class="text-muted small text-decoration-none">Staff Logout</a>
-                </div>
-            </div>
+            <p class="small text-center mb-0">&copy; 2026 Ogwogwo Bonoko Garage - Kisii Branch.</p>
         </div>
     </footer>
 
