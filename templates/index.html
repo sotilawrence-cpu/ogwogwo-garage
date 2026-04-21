@@ -1,37 +1,104 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="text-center py-5">
-    <h1 class="display-3 fw-bold text-warning">OGWOGWO BONOKO GARAGE</h1>
-    <p class="lead text-light mb-5">Kisii’s Premier Destination for Mechanical Excellence & Precision Repair.</p>
-    
-    <div class="row g-4 mt-2">
-        <div class="col-md-4">
-            <div class="card h-100 p-4">
-                <i class="bi bi-gear-wide-connected fs-1 text-info mb-3"></i>
-                <h5 class="fw-bold">Expert Diagnostics</h5>
-                <p class="small text-muted">We use modern scanning tools at our Kisii workshop to identify issues with pinpoint accuracy.</p>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card h-100 p-4">
-                <i class="bi bi-tools fs-1 text-info mb-3"></i>
-                <h5 class="fw-bold">Full Mechanical Service</h5>
-                <p class="small text-muted">From engine overhauls to suspension tuning, the Silver Bull team handles it all with care.</p>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card h-100 p-4">
-                <i class="bi bi-shield-check fs-1 text-info mb-3"></i>
-                <h5 class="fw-bold">Kisii Reliability</h5>
-                <p class="small text-muted">Quality parts and transparent pricing. No hidden costs for our Kisii-Kenya community.</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="mt-5">
-        <a href="/booking" class="btn btn-warning btn-lg px-5 py-3 fw-bold shadow">BOOK YOUR SERVICE NOW</a>
+<div class="text-center py-5 border-bottom border-secondary mb-5">
+    <h1 class="display-3 fw-bold text-warning tracking-tight">OGWOGWO BONOKO GARAGE</h1>
+    <p class="lead text-light mb-4">Kisii’s Premier Destination for Mechanical Excellence & Precision Repair.</p>
+    <div class="d-flex justify-content-center gap-3">
+        <a href="/booking" class="btn btn-warning btn-lg px-5 py-3 fw-bold shadow">BOOK A SERVICE</a>
+        <a href="#gallery" class="btn btn-outline-light btn-lg px-4 py-3">VIEW OUR WORK</a>
     </div>
 </div>
+
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="card h-100 p-4 text-center bg-dark border-secondary">
+            <i class="bi bi-cpu fs-1 text-info mb-3"></i>
+            <h5 class="fw-bold">Computerized Tech</h5>
+            <p class="small text-muted">Advanced scanning and diagnostics right here in Kisii.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 p-4 text-center bg-dark border-secondary">
+            <i class="bi bi-wrench-adjustable fs-1 text-info mb-3"></i>
+            <h5 class="fw-bold">Master Mechanics</h5>
+            <p class="small text-muted">Engine overhauls, gearbox repairs, and routine maintenance.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 p-4 text-center bg-dark border-secondary">
+            <i class="bi bi-check-all fs-1 text-info mb-3"></i>
+            <h5 class="fw-bold">Genuine Parts</h5>
+            <p class="small text-muted">We only use high-quality, verified spares for your vehicle.</p>
+        </div>
+    </div>
+</div>
+
+<div id="gallery" class="py-5">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <h2 class="text-warning fw-bold mb-0">OUR RECENT WORK</h2>
+            <p class="text-muted mb-0">Explore our latest repairs and premium products in Kisii.</p>
+        </div>
+        <span class="badge bg-info text-dark p-2">LIVE SHOWROOM</span>
+    </div>
+
+    <div class="row">
+        {% for img in images %}
+        <div class="col-md-4 col-sm-6 mb-4">
+            <div class="card h-100 bg-black border-secondary overflow-hidden gallery-card">
+                <div class="position-relative">
+                    <img src="{{ url_for('static', filename='uploads/gallery/' + img.filename) }}" 
+                         class="card-img-top img-fluid" 
+                         style="height: 250px; object-fit: cover;" 
+                         alt="Garage Service">
+                    <div class="gallery-overlay d-flex align-items-center justify-content-center">
+                        <span class="btn btn-sm btn-warning fw-bold">ENLARGE</span>
+                    </div>
+                </div>
+                <div class="card-body bg-dark text-center">
+                    <p class="card-text text-white small mb-0">{{ img.description }}</p>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12 text-center py-5 border border-dashed border-secondary rounded">
+            <i class="bi bi-camera text-muted fs-1"></i>
+            <p class="text-muted mt-3">Our Kisii digital showroom is currently being updated. Check back soon!</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="bg-warning rounded-4 p-5 text-center mt-5 mb-5 shadow-lg">
+    <h2 class="text-dark fw-black mb-3">READY TO GET BACK ON THE ROAD?</h2>
+    <p class="text-dark opacity-75 mb-4">Experience the best mechanical service in the Kisii region.</p>
+    <a href="/booking" class="btn btn-dark btn-lg px-5 py-3 fw-bold">SCHEDULE APPOINTMENT</a>
+</div>
+
+<style>
+    .gallery-card {
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .gallery-card:hover {
+        transform: scale(1.03);
+        border-color: #ffc107 !important;
+        box-shadow: 0 10px 30px rgba(255, 193, 7, 0.2);
+    }
+    .gallery-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.4);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    .gallery-card:hover .gallery-overlay {
+        opacity: 1;
+    }
+</style>
 {% endblock %}
+
       

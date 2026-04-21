@@ -1,103 +1,122 @@
-# --- THE FIX: MUST BE AT THE VERY TOP TO PREVENT RENDER ERRORS ---
 import eventlet
 eventlet.monkey_patch()
-# ----------------------------------------------------------------
 
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO
+from werkzeug.utils import secure_filename
 import os
 
 app = Flask(__name__)
 
-# --- SECURITY & DATABASE CONFIGURATION ---
-# SECRET_KEY is used to encrypt your session (login)
+# --- CONFIGURATION ---
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'ogwogwo-super-secret-2026')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///garage.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# The password is pulled from Render settings, defaults to Ogwogwo2026
+# Folder to store uploaded garage photos
+UPLOAD_FOLDER = 'static/uploads/gallery'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB Limit
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+# Ensure upload directory exists
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'Ogwogwo2026')
 
 db = SQLAlchemy(app)
-# SocketIO configured for real-time alerts on the Admin Panel
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
 
-# Database Model
+# --- MODELS ---
 class Booking(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     customer_name = db.Column(db.String(150), nullable=False)
     phone = db.Column(db.String(20), nullable=False)
     plate_number = db.Column(db.String(20), nullable=False)
-    service_type = db.Column(db.Text, nullable=False) # Changed to Text for long descriptions
+    service_type = db.Column(db.Text, nullable=False)
     date = db.Column(db.String(20), nullable=False)
     status = db.Column(db.String(20), default='Pending')
 
-# Initialize Database
+class Gallery(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.String(200))
+
 with app.app_context():
     db.create_all()
 
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+# --- ROUTES ---
 @app.route('/')
 def index():
-    return render_template('index.html')
+    images = Gallery.query.all()
+    return render_template('index.html', images=images)
 
 @app.route('/booking', methods=['GET', 'POST'])
 def booking():
     if request.method == 'POST':
-        # 1. Combine Names from the new form
-        first = request.form.get('first_name', '')
-        others = request.form.get('other_names', '')
-        full_name = f"{first} {others}".strip()
-        
-        # 2. Create the Database Entry
+        full_name = f"{request.form.get('first_name')} {request.form.get('other_names')}"
         new_booking = Booking(
             customer_name=full_name,
             phone=request.form.get('phone'),
             plate_number=request.form.get('plate'),
-            service_type=request.form.get('service'), # The big description box
+            service_type=request.form.get('service'),
             date=request.form.get('date')
         )
         db.session.add(new_booking)
         db.session.commit()
-        
-        # 3. Trigger Real-time Alert for Admin
-        socketio.emit('new_booking', {
-            'customer': full_name,
-            'plate': new_booking.plate_number,
-            'service': "New Request Received"
-        })
-        
+        socketio.emit('new_booking', {'customer': full_name, 'plate': new_booking.plate_number})
         return redirect(url_for('index'))
     return render_template('booking.html')
 
-# --- PROTECTED ADMIN DASHBOARD ---
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
     if request.method == 'POST':
         if request.form.get('password') == ADMIN_PASSWORD:
             session['logged_in'] = True
             return redirect(url_for('admin'))
-        else:
-            return "<html><body style='background:#1a1a1a;color:red;text-align:center;padding-top:50px;'><h2>Access Denied</h2><a href='/admin' style='color:white;'>Try Again</a></body></html>", 403
+        return "Access Denied", 403
 
     if not session.get('logged_in'):
-        return f'''
-            <body style="background:#1a1a1a; color:white; display:flex; justify-content:center; align-items:center; height:100vh; font-family:sans-serif; margin:0;">
-                <form method="post" style="border:2px solid #444; padding:30px; border-radius:15px; background:#262626; width:300px; text-align:center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
-                    <h2 style="color:#ffc107; margin-bottom:20px;">Ogwogwo Admin</h2>
-                    <input type="password" name="password" placeholder="Admin Password" required 
-                           style="padding:12px; width:100%; margin-bottom:20px; background:#333; color:white; border:1px solid #555; border-radius:5px;">
-                    <button type="submit" style="width:100%; padding:12px; background:#007bff; color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">LOGIN</button>
-                    <p style="margin-top:20px; font-size:11px; color:#666;">
-                        Forgot? Update <b>ADMIN_PASSWORD</b> on Render.
-                    </p>
-                </form>
-            </body>
-        '''
-    
-    # Load all bookings, newest first
+        return render_template('login.html') # Simplified login logic
+
     bookings = Booking.query.order_by(Booking.id.desc()).all()
-    return render_template('admin.html', bookings=bookings)
+    images = Gallery.query.all()
+    return render_template('admin.html', bookings=bookings, images=images)
+
+@app.route('/admin/upload', methods=['POST'])
+def upload_file():
+    if not session.get('logged_in'): return redirect(url_for('admin'))
+    
+    if 'file' not in request.files: return redirect(request.url)
+    file = request.files['file']
+    description = request.form.get('description')
+
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        
+        new_photo = Gallery(filename=filename, description=description)
+        db.session.add(new_photo)
+        db.session.commit()
+        
+    return redirect(url_for('admin'))
+
+@app.route('/admin/delete_photo/<int:id>')
+def delete_photo(id):
+    if not session.get('logged_in'): return redirect(url_for('admin'))
+    photo = Gallery.query.get(id)
+    if photo:
+        try:
+            os.remove(os.path.join(app.config['UPLOAD_FOLDER'], photo.filename))
+        except:
+            pass # File already gone
+        db.session.delete(photo)
+        db.session.commit()
+    return redirect(url_for('admin'))
 
 @app.route('/logout')
 def logout():

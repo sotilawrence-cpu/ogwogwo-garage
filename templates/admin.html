@@ -1,57 +1,106 @@
-
 {% extends "base.html" %}
+
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="text-light">Garage Dashboard</h2>
-    <div class="text-end">
-        <span class="badge bg-danger pulse">●</span> <small class="text-muted">LIVE MONITORING</small>
+    <h2 class="text-warning fw-bold">ADMIN CONTROL PANEL</h2>
+    <a href="/logout" class="btn btn-outline-danger btn-sm">Sign Out</a>
+</div>
+
+<div class="card border-info mb-5 shadow">
+    <div class="card-header bg-info text-dark fw-bold">
+        <i class="bi bi-camera-fill me-2"></i>ADD NEW GALLERY PHOTOS / PRODUCTS
+    </div>
+    <div class="card-body">
+        <p class="small text-muted">Upload photos of recent repairs or new spare parts available in Kisii.</p>
+        <form action="/admin/upload" method="POST" enctype="multipart/form-data" class="row g-3">
+            <div class="col-md-5">
+                <label class="form-label small">Select Image (JPG/PNG)</label>
+                <input type="file" name="file" class="form-control bg-dark text-white border-secondary" required>
+            </div>
+            <div class="col-md-5">
+                <label class="form-label small">Short Description</label>
+                <input type="text" name="description" class="form-control bg-dark text-white border-secondary" 
+                       placeholder="e.g., Toyota Engine Overhaul in Kisii" required>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-info w-100 fw-bold">UPLOAD</button>
+            </div>
+        </form>
     </div>
 </div>
 
-<div class="table-responsive bg-dark rounded border border-secondary p-2">
-    <table class="table table-dark table-hover mb-0">
-        <thead>
-            <tr>
-                <th>Customer</th>
-                <th>Vehicle Info</th>
-                <th>Requested Service</th>
-                <th>Date</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for b in bookings %}
-            <tr class="align-middle">
-                <td><strong>{{ b.name }}</strong><br><small class="text-info">{{ b.phone }}</small></td>
-                <td>{{ b.vehicle }}<br><small class="text-muted">{{ b.plate }}</small></td>
-                <td>{{ b.service }}</td>
-                <td>{{ b.date }}</td>
-                <td>
-                    <span class="badge rounded-pill 
-                        {% if b.status == 'Pending' %}bg-warning text-dark
-                        {% elif b.status == 'In Progress' %}bg-primary
-                        {% else %}bg-success{% endif %}">
-                        {{ b.status }}
-                    </span>
-                </td>
-                <td>
-                    <div class="btn-group">
-                        <a href="/update_status/{{ b.id }}/In Progress" class="btn btn-sm btn-outline-primary">Start</a>
-                        <a href="/update_status/{{ b.id }}/Completed" class="btn btn-sm btn-outline-success">Done</a>
-                    </div>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="card mb-5 shadow">
+    <div class="card-header bg-dark text-warning fw-bold">
+        <i class="bi bi-calendar-check me-2"></i>ACTIVE SERVICE BOOKINGS
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-dark table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Customer</th>
+                        <th>Plate</th>
+                        <th>Phone</th>
+                        <th>Date</th>
+                        <th>Service Required</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                    <tr>
+                        <td class="fw-bold">{{ booking.customer_name }}</td>
+                        <td><span class="badge bg-secondary text-uppercase">{{ booking.plate_number }}</span></td>
+                        <td>{{ booking.phone }}</td>
+                        <td>{{ booking.date }}</td>
+                        <td class="small">{{ booking.service_type }}</td>
+                        <td>
+                            <span class="badge {% if booking.status == 'Pending' %}bg-warning text-dark{% else %}bg-success{% endif %}">
+                                {{ booking.status }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">No bookings found yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
-<style>
-    .pulse { animation: pulse-animation 2s infinite; }
-    @keyframes pulse-animation {
-        0% { box-shadow: 0 0 0 0px rgba(220, 53, 69, 0.7); }
-        100% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
-    }
-</style>
+<h4 class="text-white mb-3"><i class="bi bi-images me-2 text-warning"></i>LIVE GALLERY PREVIEW</h4>
+<div class="row">
+    {% for img in images %}
+    <div class="col-md-3 mb-4">
+        <div class="card h-100 bg-black border-secondary">
+            <img src="{{ url_for('static', filename='uploads/gallery/' + img.filename) }}" 
+                 class="card-img-top" style="height: 180px; object-fit: cover;" alt="Gallery Image">
+            <div class="card-body p-2">
+                <p class="card-text small text-white-50 mb-2">{{ img.description }}</p>
+                <a href="/admin/delete_photo/{{ img.id }}" 
+                   class="btn btn-outline-danger btn-sm w-100" 
+                   onclick="return confirm('Delete this photo from the website?')">
+                   <i class="bi bi-trash me-1"></i>Delete Photo
+                </a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12 text-center py-5 border border-dashed border-secondary rounded">
+        <p class="text-muted">Your gallery is currently empty.</p>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    const socket = io();
+    socket.on('new_booking', function(data) {
+        alert("🚨 NEW BOOKING ALERT!\nCustomer: " + data.customer + "\nVehicle: " + data.plate);
+        location.reload(); // Refresh to show new booking in table
+    });
+</script>
 {% endblock %}
+    
